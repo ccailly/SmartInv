@@ -104,7 +104,7 @@ public interface InventoryContents {
 
 		@Override
 		public Pagination pagination(int index) {
-			if (this.paginations.isEmpty() || this.paginations.size() < index) {
+			if (this.paginations.size() <= index) {
 				this.paginations.add(new Pagination.Impl());
 			}
 
