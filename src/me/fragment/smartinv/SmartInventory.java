@@ -34,7 +34,7 @@ public class SmartInventory {
     }
 
     public Inventory open(Player player) { return open(player, 0); }
-    public Inventory open(Player player, int page) {
+    public Inventory open(Player player, int... pages) {
         Optional<SmartInventory> oldInv = this.manager.getInventory(player);
 
         oldInv.ifPresent(inv -> {
@@ -47,7 +47,9 @@ public class SmartInventory {
         });
 
         InventoryContents contents = new InventoryContents.Impl(this, player);
-        contents.pagination().page(page);
+        for (int i = 0; i < pages.length; i++) {
+        	contents.pagination(i).page(pages[i]);
+		}
 
         this.manager.setContents(player, contents);
         this.provider.init(player, contents);
@@ -61,7 +63,6 @@ public class SmartInventory {
         return handle;
     }
 
-    @SuppressWarnings("unchecked")
     public void close(Player player) {
         listeners.stream()
                 .filter(listener -> listener.getType() == InventoryCloseEvent.class)

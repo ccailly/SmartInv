@@ -1,6 +1,8 @@
 package me.fragment.smartinv.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
@@ -15,8 +17,14 @@ import me.fragment.smartinv.SmartInventory;
 public interface InventoryContents {
 
 	SmartInventory inventory();
-
+	
+	Pagination addPagination();
+	
 	Pagination pagination();
+	
+	Pagination pagination(int index);
+
+	List<Pagination> paginations();
 
 	Optional<SlotIterator> iterator(String id);
 
@@ -69,7 +77,7 @@ public interface InventoryContents {
 
 		private ClickableItem[][] contents;
 
-		private Pagination pagination = new Pagination.Impl();
+		private List<Pagination> paginations = new ArrayList<>();
 		private Map<String, SlotIterator> iterators = new HashMap<>();
 		private Map<String, Object> properties = new HashMap<>();
 
@@ -83,10 +91,29 @@ public interface InventoryContents {
 		public SmartInventory inventory() {
 			return inv;
 		}
+		
+		@Override
+		public Pagination addPagination() {
+			return this.pagination(this.paginations.size());
+		}
 
 		@Override
 		public Pagination pagination() {
-			return pagination;
+			return pagination(0);
+		}
+
+		@Override
+		public Pagination pagination(int index) {
+			if (this.paginations.size() < index) {
+				this.paginations.add(new Pagination.Impl());
+			}
+			
+			return this.paginations.get(index);
+		}
+
+		@Override
+		public List<Pagination> paginations() {
+			return this.paginations;
 		}
 
 		@Override
