@@ -17,11 +17,11 @@ import me.fragment.smartinv.SmartInventory;
 public interface InventoryContents {
 
 	SmartInventory inventory();
-	
+
 	Pagination addPagination();
-	
+
 	Pagination pagination();
-	
+
 	Pagination pagination(int index);
 
 	List<Pagination> paginations();
@@ -91,7 +91,7 @@ public interface InventoryContents {
 		public SmartInventory inventory() {
 			return inv;
 		}
-		
+
 		@Override
 		public Pagination addPagination() {
 			return this.pagination(this.paginations.size());
@@ -104,10 +104,10 @@ public interface InventoryContents {
 
 		@Override
 		public Pagination pagination(int index) {
-			if (this.paginations.size() < index) {
+			if (this.paginations.isEmpty() || this.paginations.size() < index) {
 				this.paginations.add(new Pagination.Impl());
 			}
-			
+
 			return this.paginations.get(index);
 		}
 
