@@ -17,11 +17,11 @@ import me.fragment.smartinv.SmartInventory;
 public interface InventoryContents {
 
 	SmartInventory inventory();
-	
+
 	Pagination addPagination();
-	
+
 	Pagination pagination();
-	
+
 	Pagination pagination(int index);
 
 	List<Pagination> paginations();
@@ -64,6 +64,10 @@ public interface InventoryContents {
 
 	InventoryContents fillRect(SlotPos fromPos, SlotPos toPos, ClickableItem item);
 
+	InventoryContents fillArea(int fromRow, int fromColumn, int toRow, int toColumn, ClickableItem item);
+
+	InventoryContents fillArea(SlotPos fromPos, SlotPos toPos, ClickableItem item);
+
 	<T> T property(String name);
 
 	<T> T property(String name, T def);
@@ -91,7 +95,7 @@ public interface InventoryContents {
 		public SmartInventory inventory() {
 			return inv;
 		}
-		
+
 		@Override
 		public Pagination addPagination() {
 			return this.pagination(this.paginations.size());
@@ -107,7 +111,7 @@ public interface InventoryContents {
 			if (this.paginations.size() < index) {
 				this.paginations.add(new Pagination.Impl());
 			}
-			
+
 			return this.paginations.get(index);
 		}
 
@@ -263,6 +267,22 @@ public interface InventoryContents {
 		@Override
 		public InventoryContents fillRect(SlotPos fromPos, SlotPos toPos, ClickableItem item) {
 			return fillRect(fromPos.getRow(), fromPos.getColumn(), toPos.getRow(), toPos.getColumn(), item);
+		}
+
+		@Override
+		public InventoryContents fillArea(int fromRow, int fromColumn, int toRow, int toColumn, ClickableItem item) {
+			for (int row = fromRow; row <= toRow; row++) {
+				for (int column = fromColumn; column <= toColumn; column++) {
+					set(row, column, item);
+				}
+			}
+
+			return this;
+		}
+
+		@Override
+		public InventoryContents fillArea(SlotPos fromPos, SlotPos toPos, ClickableItem item) {
+			return fillArea(fromPos.getRow(), fromPos.getColumn(), toPos.getRow(), toPos.getColumn(), item);
 		}
 
 		@SuppressWarnings("unchecked")
