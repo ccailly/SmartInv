@@ -2,6 +2,7 @@ package me.fragment.smartinv.content;
 
 import java.util.HashSet;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -11,7 +12,7 @@ import me.fragment.smartinv.SmartInventory;
 public interface SlotIterator {
 
 	enum Type {
-		HORIZONTAL, VERTICAL, CUSTOM
+		HORIZONTAL, VERTICAL, CUSTOM, PAGED
 	}
 
 	Optional<ClickableItem> get();
@@ -52,6 +53,7 @@ public interface SlotIterator {
 		private boolean allowOverride = true;
 		private int row, column;
 		private ListIterator<SlotPos> customSlots;
+		private Map<Integer, ListIterator<SlotPos>> pagedSlots;
 
 		private Set<SlotPos> blacklisted = new HashSet<>();
 
@@ -76,6 +78,21 @@ public interface SlotIterator {
 			this.customSlots = slots;
 
 			SlotPos slotPos = this.customSlots.next();
+			this.row = slotPos.getRow();
+			this.column = slotPos.getColumn();
+		}
+
+		public Impl(InventoryContents contents, SmartInventory inv, Type type,
+				Map<Integer, ListIterator<SlotPos>> slots) {
+
+			this.contents = contents;
+			this.inv = inv;
+
+			this.type = type;
+
+			this.pagedSlots = slots;
+
+			SlotPos slotPos = slots.get(contents.pagination().getPage()).next();
 			this.row = slotPos.getRow();
 			this.column = slotPos.getColumn();
 		}
@@ -133,6 +150,14 @@ public interface SlotIterator {
 							this.column = slotPos.getColumn();
 						}
 						break;
+					case PAGED:
+						if (this.pagedSlots.containsKey(contents.pagination().getPage())
+								&& this.pagedSlots.get(contents.pagination().getPage()).hasPrevious()) {
+							SlotPos slotPos = this.pagedSlots.get(contents.pagination().getPage()).previous();
+							this.row = slotPos.getRow();
+							this.column = slotPos.getColumn();
+						}
+						break;
 					}
 				}
 			} while (!canPlace() && (row != 0 || column != 0));
@@ -167,6 +192,14 @@ public interface SlotIterator {
 					case CUSTOM:
 						if (this.customSlots.hasNext()) {
 							SlotPos slotPos = this.customSlots.next();
+							this.row = slotPos.getRow();
+							this.column = slotPos.getColumn();
+						}
+						break;
+					case PAGED:
+						if (this.pagedSlots.containsKey(contents.pagination().getPage())
+								&& this.pagedSlots.get(contents.pagination().getPage()).hasNext()) {
+							SlotPos slotPos = this.pagedSlots.get(contents.pagination().getPage()).next();
 							this.row = slotPos.getRow();
 							this.column = slotPos.getColumn();
 						}

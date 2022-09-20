@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.fragment.smartinv.ClickableItem;
 import me.fragment.smartinv.SmartInventory;
+import me.fragment.smartinv.content.SlotIterator.Type;
 
 public interface InventoryContents {
 
@@ -37,6 +38,8 @@ public interface InventoryContents {
 	SlotIterator newIterator(SlotIterator.Type type, SlotPos startPos);
 
 	SlotIterator newIterator(SlotIterator.Type type, ListIterator<SlotPos> slots);
+
+	SlotIterator newIterator(SlotIterator.Type type, Map<Integer, ListIterator<SlotPos>> slots);
 
 	ClickableItem[][] all();
 
@@ -150,6 +153,11 @@ public interface InventoryContents {
 
 		@Override
 		public SlotIterator newIterator(SlotIterator.Type type, ListIterator<SlotPos> slots) {
+			return new SlotIterator.Impl(this, inv, type, slots);
+		}
+
+		@Override
+		public SlotIterator newIterator(Type type, Map<Integer, ListIterator<SlotPos>> slots) {
 			return new SlotIterator.Impl(this, inv, type, slots);
 		}
 
